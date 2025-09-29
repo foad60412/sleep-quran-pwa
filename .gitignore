@@ -1,0 +1,2 @@
+﻿audio/*.mp3
+!audio/*.small.mp3
