@@ -1,4 +1,4 @@
-// DOM
+// عناصر DOM
 const audio = document.getElementById('audio');
 const items = Array.from(document.querySelectorAll('#playlist .item'));
 const titleEl = document.getElementById('trackTitle');
@@ -22,12 +22,8 @@ const settingsModal = document.getElementById('settingsModal');
 const closeSettings = document.getElementById('closeSettings');
 
 const splash = document.getElementById('splash');
-const bgButtons = () => [...document.querySelectorAll('.segBtn[data-bg]')];
-const themeButtons = () => [...document.querySelectorAll('.segBtn[data-theme]')];
-
 const acc = document.querySelector('.accordion');
 const accBtn = document.getElementById('togglePlaylist');
-const playlistEl = document.getElementById('playlist');
 
 let idx = 0;
 let sleepTimeout = null;
@@ -35,9 +31,8 @@ let deferredPrompt = null;
 
 // Splash
 window.addEventListener('load', ()=> setTimeout(()=> splash?.classList.add('hide'), 350));
-const sp = document.createElement('style'); sp.textContent = `.splash.hide{opacity:0;pointer-events:none;transition:.4s}`; document.head.appendChild(sp);
 
-// عناصر العناوين داخل عناصر القائمة
+// توليد عناوين العناصر بصرياً إن كانت فارغة
 items.forEach(el=>{
   if(!el.innerHTML.trim()){
     const t = el.dataset.title || 'مقطع', s = el.dataset.sub || '';
@@ -45,23 +40,14 @@ items.forEach(el=>{
   }
 });
 
-// أدوات
-const fmt = t => { if(!isFinite(t)) return '0:00'; t=Math.max(0,Math.floor(t)); const m=Math.floor(t/60), s=String(t%60).padStart(2,'0'); return `${m}:${s}`; };
+// خلفيات
 function setBg(name){
   document.body.classList.remove('bg-night','bg-dawn','bg-stars');
   const map={night:'bg-night',dawn:'bg-dawn',stars:'bg-stars'};
   document.body.classList.add(map[name]||'bg-night');
   localStorage.setItem('sleep_bg', name);
-  bgButtons().forEach(b=>b.classList.toggle('active', b.dataset.bg===name));
+  document.querySelectorAll('.segBtn[data-bg]').forEach(b=>b.classList.toggle('active', b.dataset.bg===name));
 }
-function setTheme(mode){
-  document.documentElement.setAttribute('data-theme', mode);
-  localStorage.setItem('sleep_theme', mode);
-  themeButtons().forEach(b=>b.classList.toggle('active', b.dataset.theme===mode));
-}
-
-// استعادة تفضيلات
-setTheme(localStorage.getItem('sleep_theme')||'dark');
 setBg(localStorage.getItem('sleep_bg')||'night');
 
 // إعدادات: فتح/إغلاق
@@ -69,13 +55,10 @@ settingsBtn.addEventListener('click', ()=> settingsModal.classList.add('show'));
 closeSettings.addEventListener('click', ()=> settingsModal.classList.remove('show'));
 settingsModal.addEventListener('click', e=>{ if(e.target===settingsModal) settingsModal.classList.remove('show'); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') settingsModal.classList.remove('show'); });
-
-// أزرار الثيم/الخلفية
+// أزرار الخلفية
 document.addEventListener('click', e=>{
-  const el = e.target.closest('.segBtn');
-  if(!el) return;
-  if(el.dataset.bg){ setBg(el.dataset.bg); }
-  if(el.dataset.theme){ setTheme(el.dataset.theme); }
+  const el = e.target.closest('.segBtn[data-bg]');
+  if(el) setBg(el.dataset.bg);
 });
 
 // Accordion
@@ -83,6 +66,9 @@ accBtn.addEventListener('click', ()=>{
   acc.classList.toggle('open');
   accBtn.textContent = acc.classList.contains('open') ? 'إخفاء القائمة' : 'قائمة السور';
 });
+
+// أدوات
+const fmt = t => { if(!isFinite(t)) return '0:00'; t=Math.max(0,Math.floor(t)); const m=Math.floor(t/60), s=String(t%60).padStart(2,'0'); return `${m}:${s}`; };
 
 // تحميل/تشغيل
 function load(i){
@@ -97,7 +83,10 @@ function load(i){
     navigator.mediaSession.metadata = new MediaMetadata({ title, artist:'تلاوات مختارة', album:'قرآن النوم' });
   }
 }
-function play(){ audio.play().then(()=>{ playBtn.textContent='⏸'; }).catch(()=>{}); }
+function play(){
+  audio.play().then(()=>{ playBtn.textContent='⏸'; })
+  .catch(err=>{ console.warn('play blocked:', err?.name||err); });
+}
 function pause(){ audio.pause(); playBtn.textContent='▶️'; }
 
 // أزرار
@@ -132,13 +121,14 @@ audio.addEventListener('ended', ()=>{
   if(loopAll.checked){ load(idx+1); play(); } else pause();
 });
 
-// الصوت والحفظ
+// الصوت
 const savedVol=localStorage.getItem('sleep_quran_vol');
-audio.volume = savedVol? Number(savedVol): Number(vol.value);
-if(savedVol) vol.value = savedVol;
-vol.addEventListener('input', ()=>{ audio.volume=Number(vol.value); localStorage.setItem('sleep_quran_vol', vol.value); });
+if(savedVol!=null){ audio.volume = Number(savedVol); if(vol) vol.value=savedVol; }
+if(vol){
+  vol.addEventListener('input', ()=>{ audio.volume=Number(vol.value); localStorage.setItem('sleep_quran_vol', vol.value); });
+}
 
-// حفظ التكرار
+// تكرار
 const savedLoopTrack=localStorage.getItem('sleep_quran_loop_track');
 const savedLoopAll=localStorage.getItem('sleep_quran_loop_all');
 if(savedLoopTrack!==null) loopTrack.checked = savedLoopTrack==='1';
@@ -150,7 +140,7 @@ loopAll.addEventListener('change', ()=>{ localStorage.setItem('sleep_quran_loop_
 // اختيار من القائمة
 items.forEach((el,i)=> el.addEventListener('click', ()=>{ load(i); play(); }));
 
-// مؤقت النوم
+// مؤقّت النوم
 sleepTimerSel.addEventListener('change', ()=>{
   if(sleepTimeout){ clearTimeout(sleepTimeout); sleepTimeout=null; }
   const mins=Number(sleepTimerSel.value||0);
@@ -176,6 +166,38 @@ if('mediaSession' in navigator){
   navigator.mediaSession.setActionHandler('seekbackward', ()=>jump(-10));
 }
 
+/* === فتح الصوت للـPWA على iOS بقوة === */
+(function(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  let unlocked = false, ctx;
+  function unlockAll(){
+    if(unlocked) return;
+    // 1) WebAudio نبضة صامتة
+    try{
+      if(AC){
+        ctx = ctx || new AC();
+        const g = ctx.createGain(); g.gain.value = 0; g.connect(ctx.destination);
+        const o = ctx.createOscillator(); o.frequency.value = 440; o.connect(g); o.start(0); o.stop(ctx.currentTime + 0.01);
+        if(ctx.state === 'suspended') ctx.resume();
+      }
+    }catch(_){}
+    // 2) تشغيل/إيقاف صامت لعنصر audio
+    try{
+      const wasSrc = audio.src; // موجود
+      const prevVol = audio.volume;
+      audio.muted = true;
+      audio.play().then(()=>{
+        audio.pause(); audio.currentTime = 0; audio.muted = false; audio.volume = prevVol;
+        unlocked = true;
+      }).catch(()=>{ /* يتجاهل */ });
+    }catch(_){}
+  }
+  const kick = ()=>{ unlockAll(); window.removeEventListener('touchstart', kick); window.removeEventListener('click', kick); };
+  window.addEventListener('touchstart', kick, {passive:true});
+  window.addEventListener('click', kick);
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && ctx && ctx.state==='suspended') ctx.resume(); });
+})();
+
 // PWA install
 function hideInstallIfStandalone(){
   if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){ installBtn?.remove(); }
@@ -184,27 +206,8 @@ window.addEventListener('DOMContentLoaded', hideInstallIfStandalone);
 window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; installBtn.hidden=false; });
 installBtn?.addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.hidden=true; });
 window.addEventListener('appinstalled', ()=> installBtn?.remove());
-(function(){
-  const AC = window.AudioContext || window.webkitAudioContext;
-  let unlocked = false, ctx;
-  function unlock(){
-    if(unlocked || !AC) return;
-    try{
-      ctx = ctx || new AC();
-      const buf = ctx.createBuffer(1,1,22050);
-      const src = ctx.createBufferSource();
-      src.buffer = buf; src.connect(ctx.destination); src.start(0);
-      if(ctx.state === 'suspended') ctx.resume();
-      unlocked = true;
-      window.removeEventListener('touchstart', unlock);
-      window.removeEventListener('click', unlock);
-    }catch(_){}
-  }
-  window.addEventListener('touchstart', unlock, {once:true});
-  window.addEventListener('click', unlock, {once:true});
-})();
 
 // بدء
 load(0);
-// افتح القائمة مرة واحدة على الشاشات الصغيرة
+// افتح القائمة افتراضياً على الشاشات الصغيرة
 if (window.innerWidth < 480) { acc.classList.add('open'); }

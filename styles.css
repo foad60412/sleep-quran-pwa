@@ -3,11 +3,6 @@
   --accent:#d4af37; --border:#23262d; --glass:rgba(255,255,255,.06);
   --fgOnAccent:#111;
 }
-:root[data-theme="light"]{
-  --bg:#f7f7f7; --fg:#101010; --card:#ffffff; --border:#e7e7e7;
-  --glass:rgba(0,0,0,.05); --accent:#c8a440; --fgOnAccent:#000;
-}
-
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;width:100%;font-family:"Cairo",system-ui,-apple-system,Segoe UI,Roboto,Arial}
 body{background:var(--bg);color:var(--fg);display:flex;flex-direction:column}
@@ -18,13 +13,31 @@ body{background:var(--bg);color:var(--fg);display:flex;flex-direction:column}
     radial-gradient(1000px 600px at 50% -200px, rgba(212,175,55,.12), transparent 60%),
     #000;
 }
-.bg-dawn{ background:linear-gradient(180deg,#1a1a1a 0%, #3a2c10 25%, #0b0b0b 100%) }
-.bg-stars{
-  background:#000;
-  background-image:
-    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.4) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 70% 10%, rgba(255,255,255,.35) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 40% 80%, rgba(255,255,255,.3) 50%, transparent 51%);
+.bg-dawn{
+  background:linear-gradient(180deg,#1b1308 0%, #3a2c10 45%, #0b0b0b 100%);
+}
+/* نجوم متلألئة */
+.bg-stars{background:#000; position:relative; overflow-x:hidden}
+.bg-stars::before,
+.bg-stars::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.9) 50%, transparent 51%),
+    radial-gradient(1.6px 1.6px at 70% 10%, rgba(255,255,255,.8) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 40% 80%, rgba(255,255,255,.7) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 10% 60%, rgba(255,255,255,.6) 50%, transparent 51%),
+    radial-gradient(1.8px 1.8px at 85% 50%, rgba(255,255,255,.75) 50%, transparent 51%);
+  animation:twinkle 3.2s ease-in-out infinite;
+}
+.bg-stars::after{
+  opacity:.6;
+  filter:blur(0.6px);
+  animation-duration:4.6s;
+  animation-direction:reverse;
+}
+@keyframes twinkle{
+  0%,100%{opacity:.35}
+  50%{opacity:.9}
 }
 
 /* Splash */
@@ -36,30 +49,30 @@ body{background:var(--bg);color:var(--fg);display:flex;flex-direction:column}
 
 /* رأس */
 .topbar{position:relative;display:flex;align-items:center;justify-content:center;padding:calc(10px + env(safe-area-inset-top)) 16px 6px}
-.logoWrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.logoWrap{display:flex;flex-direction:column;align-items:center;gap:6px; position:relative; z-index:1}
 .moon{width:66px;height:66px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.6))}
 .appTitle{color:var(--accent);font-weight:800;font-size:20px}
 
-/* زر الإعدادات */
+/* زر الإعدادات يسار */
 .iconBtn{
   position:absolute;left:calc(10px + env(safe-area-inset-left));
   top:calc(10px + env(safe-area-inset-top));
   background:rgba(255,255,255,.08);color:var(--accent);
-  border:1px solid rgba(212,175,55,.4);border-radius:999px;padding:8px 12px
+  border:1px solid rgba(212,175,55,.4);border-radius:999px;padding:8px 12px; z-index:2;
 }
 
-/* زر التثبيت */
+/* زر التثبيت يمين */
 .installFab{
-  position:absolute;left:calc(10px + env(safe-area-inset-left));
-  top:calc(60px + env(safe-area-inset-top));
+  position:absolute;right:calc(10px + env(safe-area-inset-right));
+  top:calc(10px + env(safe-area-inset-top));
   width:44px;height:44px;border-radius:50%;
   border:1px solid rgba(212,175,55,.55);
   background:radial-gradient(circle at 50% 45%, rgba(212,175,55,.30), rgba(212,175,55,.12));
-  box-shadow:0 6px 16px rgba(0,0,0,.45)
+  box-shadow:0 6px 16px rgba(0,0,0,.45);
 }
 @media (display-mode: standalone){ .installFab{display:none!important} }
 
-.centerWrap{width:100%;max-width:760px;margin:8px auto;padding:0 16px}
+.centerWrap{width:100%;max-width:760px;margin:8px auto;padding:0 16px; position:relative; z-index:1}
 .glass{background:var(--glass);border:1px solid var(--border);backdrop-filter:blur(10px);box-shadow:0 12px 30px rgba(0,0,0,.45);border-radius:16px}
 
 /* بطاقة المشغّل */
@@ -107,6 +120,10 @@ body{background:var(--bg);color:var(--fg);display:flex;flex-direction:column}
 .volRange{width:220px;max-width:60vw;appearance:none;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--accent) 0%, rgba(255,255,255,.12) 0%)}
 .volRange::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);box-shadow:0 2px 6px rgba(0,0,0,.5);border:2px solid rgba(0,0,0,.25)}
 .volRange::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accent);border:none}
+
+/* إظهار شريط الصوت على الحاسوب فقط */
+.desktopOnly{display:none}
+@media (hover:hover) and (pointer:fine){ .desktopOnly{display:flex} }
 
 /* Accordion */
 .accordion{margin:14px 0}

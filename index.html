@@ -22,7 +22,10 @@
 
   <header class="topbar">
     <button id="settingsBtn" class="iconBtn gear" aria-label="الإعدادات">⚙️</button>
-    <button id="installBtn" class="installFab" hidden title="تثبيت"></button>
+
+    <!-- زر تثبيت على اليمين ويختفي بعد التثبيت -->
+    <button id="installBtn" class="installFab right" hidden title="تثبيت"></button>
+
     <div class="logoWrap">
       <svg class="moon" viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r="35" fill="#d4af37"/><circle cx="62" cy="50" r="35" fill="#000"/>
@@ -72,7 +75,8 @@
           </div>
         </label>
 
-        <label class="row glassRow">
+        <!-- شريط الصوت يظهر على الحاسوب فقط -->
+        <label class="row glassRow desktopOnly">
           <div class="rowText"><span class="rowTitle">مستوى الصوت</span><span class="rowHint">تحكم سريع</span></div>
           <input id="volume" type="range" min="0" max="1" step="0.01" value="0.6" class="volRange">
         </label>
@@ -104,25 +108,19 @@
       </div>
       <div class="modalBody">
         <div class="pref">
-          <label>الثيم</label>
-          <div class="seg">
-            <button class="segBtn" data-theme="dark">ليلي 🌙</button>
-            <button class="segBtn" data-theme="light">نهاري ☀️</button>
-          </div>
-        </div>
-        <div class="pref">
           <label>الخلفية</label>
           <div class="seg">
             <button class="segBtn" data-bg="night">ليل هادئ</button>
-            <button class="segBtn" data-bg="stars">نجوم</button>
-            <button class="segBtn" data-bg="dawn">فجر</button>
+            <button class="segBtn" data-bg="stars">نجوم لامعة</button>
+            <button class="segBtn" data-bg="dawn">فجر ذهبي</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- عنصر الصوت -->
   <audio id="audio" preload="metadata" crossorigin="anonymous" playsinline webkit-playsinline></audio>
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
