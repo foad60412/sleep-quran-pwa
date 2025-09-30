@@ -147,8 +147,8 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:14px 0 24px}
   .centerWrap{ padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
   /* زر التثبيت الدائري على اليسار */
   .installFab{ 
-    left: calc(14px + env(safe-area-inset-left)); 
-    top:  calc(14px + env(safe-area-inset-top)); 
+    left: calc(10px + env(safe-area-inset-left)); 
+    top:  calc(10px + env(safe-area-inset-top)); 
   }
 }
 .logoWrap{ margin-top: 6px; }          /* إن لزم */
