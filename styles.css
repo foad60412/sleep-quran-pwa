@@ -140,15 +140,28 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding:14px 0 24px}
 .installFab:hover{box-shadow:0 8px 20px rgba(212,175,55,.25)}
 .installFab:active{transform:scale(.92)}
 .installFab svg{pointer-events:none}
-/* احترام مساحة النوتش والجانبين */
-@supports (padding: env(safe-area-inset-top)) {
-  body{ padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
-  .topbar{ padding-top: calc(18px + env(safe-area-inset-top)); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
-  .centerWrap{ padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
-  /* زر التثبيت الدائري على اليسار */
-  .installFab{ 
-    left: calc(10px + env(safe-area-inset-left)); 
-    top:  calc(10px + env(safe-area-inset-top)); 
-  }
+/* تقليل المسافة العليا */
+.topbar{ padding-top: calc(8px + env(safe-area-inset-top)); }
+.logoWrap{ margin-top: 0; }
+.centerWrap{ margin-top: 6px; }
+
+/* حجم الهلال أصغر قليلاً */
+.moon{ width:68px; height:68px; }
+
+/* زر التثبيت أصغر وملاصق للحافة الآمنة */
+.installFab{
+  width:44px;height:44px;
+  left: calc(10px + env(safe-area-inset-left));
+  top:  calc(10px + env(safe-area-inset-top));
 }
-.logoWrap{ margin-top: 6px; }          /* إن لزم */
+
+/* أخفّ فراغات البطاقة */
+#playerCard{ padding:16px; }
+.controls{ margin:10px 0; }
+.progress{ margin:6px 0; }
+.toggles{ gap:10px; }
+
+/* إخفاء زر التثبيت داخل التطبيق المثبّت */
+@media (display-mode: standalone){
+  .installFab{ display:none !important; }
+}

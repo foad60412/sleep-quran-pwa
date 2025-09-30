@@ -194,6 +194,13 @@ installBtn?.addEventListener('click', async ()=>{
   deferredPrompt = null;
   installBtn.hidden = true;
 });
+function hideInstallIfStandalone(){
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){
+    installBtn?.remove();
+  }
+}
+window.addEventListener('DOMContentLoaded', hideInstallIfStandalone);
+window.addEventListener('appinstalled', ()=> installBtn?.remove());
 
 // بدء
 load(0);
