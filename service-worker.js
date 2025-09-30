@@ -1,5 +1,5 @@
 // زد الرقم مع كل تحديث
-const CACHE_NAME = 'sleep-quran-v12';
+const CACHE_NAME = 'sleep-quran-v13,.';
 
 const ASSETS = [
   '/', '/index.html',
