@@ -1,5 +1,5 @@
 // اسم جديد للكاش لمسح أي نسخ قديمة
-const CACHE_NAME = 'sleep-quran-v5';
+const CACHE_NAME = 'sleep-quran-v7';
 
 // الملفات التي نحفظها في الكاش
 const ASSETS = [
