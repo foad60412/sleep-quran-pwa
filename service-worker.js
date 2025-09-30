@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sleep-quran-v9';
+const CACHE_NAME = 'sleep-quran-v10';
 const ASSETS = [
   '/', '/index.html', '/styles.css', '/app.js', '/manifest.json',
   '/assets/icons/icon-192.png', '/assets/icons/icon-512.png',

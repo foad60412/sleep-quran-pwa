@@ -184,6 +184,25 @@ window.addEventListener('DOMContentLoaded', hideInstallIfStandalone);
 window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredPrompt=e; installBtn.hidden=false; });
 installBtn?.addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.hidden=true; });
 window.addEventListener('appinstalled', ()=> installBtn?.remove());
+(function(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  let unlocked = false, ctx;
+  function unlock(){
+    if(unlocked || !AC) return;
+    try{
+      ctx = ctx || new AC();
+      const buf = ctx.createBuffer(1,1,22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buf; src.connect(ctx.destination); src.start(0);
+      if(ctx.state === 'suspended') ctx.resume();
+      unlocked = true;
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('click', unlock);
+    }catch(_){}
+  }
+  window.addEventListener('touchstart', unlock, {once:true});
+  window.addEventListener('click', unlock, {once:true});
+})();
 
 // بدء
 load(0);
