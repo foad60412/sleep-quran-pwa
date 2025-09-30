@@ -1,6 +1,6 @@
-// ===== Quran Sleep PWA - app.js (v13) =====
+/* ===== Quran Sleep PWA — app.js (v15) ===== */
 
-// DOM
+/* ---------- DOM ---------- */
 const audio = document.getElementById('audio');
 const items = Array.from(document.querySelectorAll('#playlist .item'));
 const titleEl = document.getElementById('trackTitle');
@@ -27,29 +27,32 @@ const splash = document.getElementById('splash');
 const acc = document.querySelector('.accordion');
 const accBtn = document.getElementById('togglePlaylist');
 
+/* ---------- State ---------- */
 let idx = 0;
 let sleepTimeout = null;
 let deferredPrompt = null;
 let seeking = false;
-
-// iOS/PWA: يتطلب إعادة تهيئة المصدر أول إيماءة
+/* iOS/PWA: إجبار أول إيماءة لبدء التنزيل والتشغيل */
 let firstGestureNeeded = true;
 
-// Splash
-window.addEventListener('load', () => setTimeout(() => splash?.classList.add('hide'), 350));
-// أغلق الـSplash بأسرع ما يمكن
-function hideSplashNow(){
-  if(!splash) return;
-  splash.classList.add('hide');
-  // بعد الانتقال احذف العنصر نهائياً
-  setTimeout(()=> splash.remove?.(), 400);
-}
-window.addEventListener('load', hideSplashNow);
-window.addEventListener('DOMContentLoaded', ()=> setTimeout(hideSplashNow, 200));
-window.addEventListener('touchstart', hideSplashNow, {once:true});
-window.addEventListener('click', hideSplashNow, {once:true});
+/* ---------- Utils ---------- */
+const fmt = t => {
+  if (!isFinite(t)) return '0:00';
+  t = Math.max(0, Math.floor(t));
+  const m = Math.floor(t / 60), s = String(t % 60).padStart(2, '0');
+  return `${m}:${s}`;
+};
 
-// عناوين عناصر القائمة
+function hideSplashNow() {
+  if (!splash) return;
+  splash.classList.add('hide');
+  setTimeout(() => splash.remove?.(), 300);
+}
+
+/* ---------- Boot ---------- */
+window.addEventListener('load', hideSplashNow);
+window.addEventListener('DOMContentLoaded', () => setTimeout(hideSplashNow, 200));
+
 items.forEach(el => {
   if (!el.innerHTML.trim()) {
     const t = el.dataset.title || 'مقطع', s = el.dataset.sub || '';
@@ -57,7 +60,7 @@ items.forEach(el => {
   }
 });
 
-// خلفيات
+/* خلفيات */
 function setBg(name) {
   document.body.classList.remove('bg-night', 'bg-dawn', 'bg-stars');
   const map = { night: 'bg-night', dawn: 'bg-dawn', stars: 'bg-stars' };
@@ -67,27 +70,23 @@ function setBg(name) {
 }
 setBg(localStorage.getItem('sleep_bg') || 'night');
 
-// إعدادات: فتح/إغلاق
+/* إعدادات */
 settingsBtn.addEventListener('click', () => settingsModal.classList.add('show'));
 closeSettings.addEventListener('click', () => settingsModal.classList.remove('show'));
 settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.remove('show'); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') settingsModal.classList.remove('show'); });
-// أزرار الخلفية
 document.addEventListener('click', e => {
   const el = e.target.closest('.segBtn[data-bg]');
   if (el) setBg(el.dataset.bg);
 });
 
-// Accordion
+/* Accordion */
 accBtn.addEventListener('click', () => {
   acc.classList.toggle('open');
   accBtn.textContent = acc.classList.contains('open') ? 'إخفاء القائمة' : 'قائمة السور';
 });
 
-// أدوات
-const fmt = t => { if (!isFinite(t)) return '0:00'; t = Math.max(0, Math.floor(t)); const m = Math.floor(t / 60), s = String(t % 60).padStart(2, '0'); return `${m}:${s}`; };
-
-// تحميل
+/* ---------- Player ---------- */
 function load(i) {
   idx = (i + items.length) % items.length;
   items.forEach(el => el.classList.remove('active'));
@@ -95,7 +94,12 @@ function load(i) {
 
   const src = it.dataset.src, title = it.dataset.title || '', sub = it.dataset.sub || '';
   titleEl.textContent = title; subEl.textContent = sub;
-  audio.src = src; audio.loop = loopTrack.checked; audio.load();
+
+  audio.pause();
+  audio.src = src;                 // إعادة تعيين المصدر
+  audio.loop = loopTrack.checked;
+  audio.load();                    // إجبار iOS على بدء التحضير
+
   seek.value = 0; cur.textContent = '0:00'; dur.textContent = '0:00';
 
   if ('mediaSession' in navigator) {
@@ -103,35 +107,41 @@ function load(i) {
   }
 }
 
-// تشغيل/إيقاف
-function pause() { audio.pause(); playBtn.textContent = '▶️'; }
+function forcePrimeAudioChain() {
+  // يُستدعى داخل الإيماءة الأولى فقط
+  try {
+    const s = audio.src || (items[idx]?.dataset.src || '');
+    audio.pause();
+    audio.src = ''; audio.load();   // تفريغ كامل
+    audio.src = s;  audio.load();   // إعادة تهيئة المصدر داخل نفس الإيماءة
+  } catch (_) {}
+}
 
-// زر التشغيل: معالجة أول إيماءة لـ iOS PWA
+/* زر التشغيل: يخفي Splash ثم ي priming ثم يشغّل */
 playBtn.addEventListener('click', async () => {
+  hideSplashNow();
+
   if (firstGestureNeeded) {
-    try {
-      const s = audio.src || (items[idx]?.dataset.src || '');
-      audio.pause();
-      audio.src = ''; audio.load();          // تفريغ
-      audio.src = s; audio.load();           // إعادة تهيئة داخل نفس الإيماءة
-      firstGestureNeeded = false;
-    } catch (_) {}
+    forcePrimeAudioChain();
+    firstGestureNeeded = false;
   }
   try {
     await audio.play();
     playBtn.textContent = '⏸';
-  } catch (e) {
-    try { audio.muted = true; await audio.play(); audio.muted = false; playBtn.textContent = '⏸'; } catch (_) {}
+  } catch {
+    try { audio.muted = true; await audio.play(); audio.muted = false; playBtn.textContent = '⏸'; } catch {}
   }
 });
 
 prevBtn.addEventListener('click', () => { load(idx - 1); playBtn.click(); });
 nextBtn.addEventListener('click', () => { load(idx + 1); playBtn.click(); });
 
-// ميتاداتا
-audio.addEventListener('loadedmetadata', () => { seek.max = Math.floor(audio.duration || 0); dur.textContent = fmt(audio.duration); });
+audio.addEventListener('loadedmetadata', () => {
+  seek.max = Math.floor(audio.duration || 0);
+  dur.textContent = fmt(audio.duration);
+});
 
-// شريط التقدم
+/* Seek */
 function applySeek() { audio.currentTime = Number(seek.value || 0); seeking = false; }
 seek.addEventListener('input', () => { seeking = true; cur.textContent = fmt(Number(seek.value || 0)); });
 seek.addEventListener('change', applySeek);
@@ -149,23 +159,20 @@ audio.addEventListener('timeupdate', () => {
   seek.style.background = `linear-gradient(90deg, var(--accent) ${p}%, rgba(255,255,255,.12) ${p}%)`;
 });
 
-// نهاية المقطع
 audio.addEventListener('ended', () => {
   if (loopTrack.checked) return;
-  if (loopAll.checked) { load(idx + 1); playBtn.click(); } else pause();
+  if (loopAll.checked) { load(idx + 1); playBtn.click(); } else { audio.pause(); playBtn.textContent = '▶️'; }
 });
 
-// الصوت (يظهر على الديسكتوب فقط في الواجهة)
+/* حجم الصوت */
 const savedVol = localStorage.getItem('sleep_quran_vol');
 if (savedVol != null) { audio.volume = Number(savedVol); if (vol) vol.value = savedVol; }
-if (vol) {
-  vol.addEventListener('input', () => {
-    audio.volume = Number(vol.value);
-    localStorage.setItem('sleep_quran_vol', vol.value);
-  });
-}
+if (vol) vol.addEventListener('input', () => {
+  audio.volume = Number(vol.value);
+  localStorage.setItem('sleep_quran_vol', vol.value);
+});
 
-// التكرار
+/* تكرار */
 const savedLoopTrack = localStorage.getItem('sleep_quran_loop_track');
 const savedLoopAll = localStorage.getItem('sleep_quran_loop_all');
 if (savedLoopTrack !== null) loopTrack.checked = savedLoopTrack === '1';
@@ -174,37 +181,32 @@ audio.loop = loopTrack.checked;
 loopTrack.addEventListener('change', () => { audio.loop = loopTrack.checked; localStorage.setItem('sleep_quran_loop_track', loopTrack.checked ? '1' : '0'); });
 loopAll.addEventListener('change', () => { localStorage.setItem('sleep_quran_loop_all', loopAll.checked ? '1' : '0'); });
 
-// اختيار من القائمة + الحيلة الأولى
+/* اختيار من القائمة: يخفي Splash ويُفعّل priming ثم تشغيل */
 items.forEach((el, i) => el.addEventListener('click', async () => {
+  hideSplashNow();
   load(i);
-  if (firstGestureNeeded) {
-    try {
-      const s = audio.src;
-      audio.pause(); audio.src = ''; audio.load(); audio.src = s; audio.load();
-      firstGestureNeeded = false;
-    } catch (_) {}
-  }
-  try { await audio.play(); playBtn.textContent = '⏸'; } catch (_) {}
+  if (firstGestureNeeded) { forcePrimeAudioChain(); firstGestureNeeded = false; }
+  try { await audio.play(); playBtn.textContent = '⏸'; } catch {}
 }));
 
-// مؤقّت النوم
+/* مؤقّت النوم */
 sleepTimerSel.addEventListener('change', () => {
   if (sleepTimeout) { clearTimeout(sleepTimeout); sleepTimeout = null; }
   const mins = Number(sleepTimerSel.value || 0);
-  if (mins > 0) sleepTimeout = setTimeout(() => { pause(); audio.currentTime = 0; }, mins * 60 * 1000);
+  if (mins > 0) sleepTimeout = setTimeout(() => { audio.pause(); audio.currentTime = 0; playBtn.textContent = '▶️'; }, mins * 60 * 1000);
 });
 
-// أزرار سريعة
+/* أزرار سريعة */
 playAllBtn.addEventListener('click', () => {
   if (!loopAll.checked) { loopAll.checked = true; localStorage.setItem('sleep_quran_loop_all', '1'); }
   load(0); playBtn.click();
 });
-stopBtn.addEventListener('click', () => { pause(); audio.currentTime = 0; });
+stopBtn.addEventListener('click', () => { audio.pause(); audio.currentTime = 0; playBtn.textContent = '▶️'; });
 
-// Media Session
+/* Media Session */
 if ('mediaSession' in navigator) {
   const play = () => playBtn.click();
-  const pauseA = () => pause();
+  const pauseA = () => { audio.pause(); playBtn.textContent = '▶️'; };
   navigator.mediaSession.setActionHandler('play', play);
   navigator.mediaSession.setActionHandler('pause', pauseA);
   navigator.mediaSession.setActionHandler('previoustrack', () => { load(idx - 1); play(); });
@@ -215,7 +217,7 @@ if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('seekbackward', () => jump(-10));
 }
 
-/* فتح الصوت بقوة عبر WebAudio + استئناف عند العودة */
+/* WebAudio priming + استئناف عند العودة */
 (function () {
   const AC = window.AudioContext || window.webkitAudioContext;
   let ctx;
@@ -227,7 +229,7 @@ if ('mediaSession' in navigator) {
         const o = ctx.createOscillator(); o.frequency.value = 440; o.connect(g); o.start(0); o.stop(ctx.currentTime + 0.01);
         if (ctx.state === 'suspended') ctx.resume();
       }
-    } catch (_) {}
+    } catch {}
   }
   const kick = () => { unlockAll(); window.removeEventListener('touchstart', kick); window.removeEventListener('click', kick); };
   window.addEventListener('touchstart', kick, { passive: true });
@@ -235,7 +237,7 @@ if ('mediaSession' in navigator) {
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && ctx && ctx.state === 'suspended') ctx.resume(); });
 })();
 
-// PWA install
+/* PWA install */
 function hideInstallIfStandalone() {
   if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) { installBtn?.remove(); }
 }
@@ -244,6 +246,6 @@ window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferr
 installBtn?.addEventListener('click', async () => { if (!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; installBtn.hidden = true; });
 window.addEventListener('appinstalled', () => installBtn?.remove());
 
-// بدء
+/* Start */
 load(0);
 if (window.innerWidth < 480) { acc.classList.add('open'); }
