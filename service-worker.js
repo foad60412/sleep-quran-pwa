@@ -1,5 +1,5 @@
 // ارفع الإصدار
-const CACHE_NAME = 'sleep-quran-v15';
+const CACHE_NAME = 'sleep-quran-v16';
 
 const ASSETS = [
   '/', '/index.html',
