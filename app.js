@@ -37,6 +37,17 @@ let firstGestureNeeded = true;
 
 // Splash
 window.addEventListener('load', () => setTimeout(() => splash?.classList.add('hide'), 350));
+// أغلق الـSplash بأسرع ما يمكن
+function hideSplashNow(){
+  if(!splash) return;
+  splash.classList.add('hide');
+  // بعد الانتقال احذف العنصر نهائياً
+  setTimeout(()=> splash.remove?.(), 400);
+}
+window.addEventListener('load', hideSplashNow);
+window.addEventListener('DOMContentLoaded', ()=> setTimeout(hideSplashNow, 200));
+window.addEventListener('touchstart', hideSplashNow, {once:true});
+window.addEventListener('click', hideSplashNow, {once:true});
 
 // عناوين عناصر القائمة
 items.forEach(el => {
