@@ -1,127 +1,147 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <title>قرآن النوم</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+  <!-- PWA / iOS -->
+  <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="assets/icons/favicon.ico">
-  <link rel="apple-touch-icon" href="assets/icons/icon-192-maskable.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/assets/icons/favicon.ico">
+
+  <title>قرآن النوم</title>
+  <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="bg-night" data-theme="dark">
-  <!-- Splash -->
-  <div id="splash" class="splash">
-    <div class="splash-logo">
-      <svg viewBox="0 0 100 100" class="moon"><circle cx="50" cy="50" r="35" fill="#d4af37"/><circle cx="62" cy="50" r="35" fill="#000"/></svg>
-      <div class="splash-title">قرآن النوم</div>
-    </div>
+<body class="bg-stars">
+  <!-- طبقة نجوم إضافية -->
+  <div class="stars-extra"></div>
+
+  <!-- زر التثبيت أعلى يمين الصفحة -->
+  <div class="installFab topbar centerWrap">
+    <button id="installBtn" class="btn circle" title="تثبيت التطبيق" aria-label="تثبيت">
+      ⤓
+    </button>
   </div>
 
-  <header class="topbar">
-    <button id="settingsBtn" class="iconBtn gear" aria-label="الإعدادات">⚙️</button>
-    <div class="stars-extra"></div>
-    <!-- زر تثبيت على اليمين ويختفي بعد التثبيت -->
-    <button id="installBtn" class="installFab right" hidden title="تثبيت"><i class="fa-solid fa-download"></i>
-    </button>
-
+  <!-- الهيدر -->
+  <header class="centerWrap header">
     <div class="logoWrap">
-      <svg class="moon" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="35" fill="#d4af37"/><circle cx="62" cy="50" r="35" fill="#000"/>
-      </svg>
-      <div class="appTitle">قرآن النوم</div>
+      <div class="moon" aria-hidden="true"></div>
     </div>
+    <h1 class="title gold" style="text-align:center;">قرآن النوم</h1>
   </header>
 
-  <main class="centerWrap">
-    <section id="playerCard" class="glass">
-      <div class="track-meta">
-        <div id="trackTitle">—</div>
-        <div id="trackSub">—</div>
-      </div>
+  <!-- بطاقة المشغّل -->
+  <main class="container">
+    <section class="playerCard">
+      <h2 id="trackTitle" class="gold" style="text-align:center; font-size:28px; font-weight:800;">سورة الملك</h2>
+      <div id="trackSub" class="sub" style="text-align:center;margin-bottom:12px;">الملك</div>
 
       <div class="controls">
-        <button id="prevBtn" class="btn ico" aria-label="السابق">‹</button>
-        <button id="playPauseBtn" class="btn primary circle" aria-label="تشغيل/إيقاف">▶️</button>
-        <button id="nextBtn" class="btn ico" aria-label="التالي">›</button>
+        <button id="prevBtn" class="btn icon" aria-label="السابق">❮</button>
+        <button id="playPauseBtn" class="btn circle primary" aria-label="تشغيل/إيقاف">▶️</button>
+        <button id="nextBtn" class="btn icon" aria-label="التالي">❯</button>
       </div>
 
-      <div class="progress">
+      <!-- شريط التقدّم — يُخفى على الهاتف عبر CSS -->
+      <div class="timeRow desktopOnly">
         <span id="currentTime">0:00</span>
-        <input id="seek" type="range" min="0" max="100" value="0" aria-label="تحريك موضع التشغيل">
+        <input id="seek" type="range" min="0" value="0" />
         <span id="duration">0:00</span>
       </div>
 
-      <div class="toggles">
-        <label class="row glassRow">
-          <div class="rowText"><span class="rowTitle">تكرار المقطع</span><span class="rowHint">يعيد المقطع نفسه</span></div>
-          <label class="switch"><input type="checkbox" id="loopTrack"><span class="track"><span class="knob"></span></span></label>
-        </label>
+      <!-- صفوف الإعدادات -->
+      <div class="grid" style="margin-top:14px">
+        <!-- تكرار المقطع -->
+        <div class="panel row">
+          <label class="sub">تكرار المقطع</label>
+          <label class="switch" aria-label="تكرار المقطع">
+            <input id="loopTrack" type="checkbox" hidden>
+            <span class="knob"></span>
+          </label>
+        </div>
 
-        <label class="row glassRow">
-          <div class="rowText"><span class="rowTitle">تكرار القائمة</span><span class="rowHint">ينتقل تلقائيًا للعنصر التالي</span></div>
-          <label class="switch"><input type="checkbox" id="loopAll" checked><span class="track"><span class="knob"></span></span></label>
-        </label>
+        <!-- تكرار القائمة -->
+        <div class="panel row">
+          <label class="sub">تكرار القائمة</label>
+          <label class="switch" aria-label="تكرار القائمة">
+            <input id="loopAll" type="checkbox" hidden>
+            <span class="knob"></span>
+          </label>
+        </div>
 
-        <label class="row glassRow">
-          <div class="rowText"><span class="rowTitle">مؤقّت النوم</span><span class="rowHint">إيقاف تلقائي</span></div>
-          <div class="selectWrap">
-            <select id="sleepTimer">
-              <option value="0">بدون</option><option value="10">10 دقائق</option>
-              <option value="20">20 دقيقة</option><option value="30">30 دقيقة</option>
-              <option value="45">45 دقيقة</option><option value="60">60 دقيقة</option>
-            </select>
-          </div>
-        </label>
+        <!-- مؤقّت النوم -->
+        <div class="panel row">
+          <label class="sub">مؤقّت النوم</label>
+          <select id="sleepTimer">
+            <option value="0" selected>بدون</option>
+            <option value="10">10 دقائق</option>
+            <option value="20">20 دقيقة</option>
+            <option value="30">30 دقيقة</option>
+            <option value="45">45 دقيقة</option>
+            <option value="60">ساعة</option>
+          </select>
+        </div>
 
-        <!-- شريط الصوت يظهر على الحاسوب فقط -->
-        <label class="row glassRow desktopOnly">
-          <div class="rowText"><span class="rowTitle">مستوى الصوت</span><span class="rowHint">تحكم سريع</span></div>
-          <input id="volume" type="range" min="0" max="1" step="0.01" value="0.6" class="volRange">
-        </label>
-      </div>
+        <!-- مستوى الصوت — سيختفي على الهاتف -->
+        <div class="panel row desktopOnly">
+          <label class="sub">مستوى الصوت</label>
+          <input id="volume" type="range" min="0" max="1" step="0.01" value="0.8">
+        </div>
 
-      <div id="quickActions">
-        <button id="playAllBtn" class="btn wide">تشغيل القائمة كاملة</button>
-        <button id="stopBtn" class="btn wide outline">إيقاف</button>
+        <!-- أزرار سريعة -->
+        <div class="row" style="gap:10px">
+          <button id="playAllBtn" class="btn" style="flex:1">تشغيل القائمة كاملة</button>
+          <button id="stopBtn" class="btn ghost" style="flex:1">إيقاف</button>
+        </div>
       </div>
     </section>
 
-    <!-- قائمة السور (قابلة للطي) -->
-    <section class="accordion">
-      <button id="togglePlaylist" class="accordionBtn">قائمة السور</button>
-      <div id="playlist" class="accordionBody" aria-label="قائمة السور">
-        <div id="mulk"    class="item" data-src="audio/Surah-Al-Mulk.small.mp3"    data-title="سورة الملك"   data-sub="الملك"></div>
-        <div id="baqarah" class="item" data-src="audio/surah-Albaqarah.small.mp3"  data-title="سورة البقرة"  data-sub="آيات مختارة"></div>
-        <div id="ikhlas"  class="item" data-src="audio/surah-Alqrse.small.mp3"     data-title="سورة الإخلاص" data-sub="الإخلاص"></div>
+    <!-- أكوردون قائمة السور -->
+    <section class="accordion card" style="margin-top:16px">
+      <button id="togglePlaylist" class="btn" style="width:100%">قائمة السور</button>
+      <div class="content" id="playlist" style="padding:12px;">
+        <!-- عدّل العناوين والمسارات حسب ملفاتك -->
+        <button class="listBtn item active" data-src="/audio/Surah-Al-Mulk.small.mp3" data-title="سورة الملك" data-sub="الملك">الملك</button>
+        <button class="listBtn item" data-src="/audio/surah-Albaqarah.small.mp3" data-title="سورة البقرة" data-sub="آيات مختارة">سورة البقرة</button>
+        <button class="listBtn item" data-src="/audio/surah-Alqrse.small.mp3" data-title="سورة الإخلاص" data-sub="الإخلاص">سورة الإخلاص</button>
       </div>
     </section>
   </main>
 
-  <!-- نافذة الإعدادات -->
-  <div id="settingsModal" class="modal" aria-hidden="true">
-    <div class="modalCard">
-      <div class="modalHeader">
-        <h3>الإعدادات</h3>
-        <button id="closeSettings" class="iconBtn">✕</button>
+  <!-- إعدادات الخلفية -->
+  <section id="settingsModal" class="modal">
+    <div class="card" style="padding:18px;max-width:680px;margin:0 auto;">
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 class="gold" style="margin:0">الإعدادات</h3>
+        <button id="closeSettings" class="btn ghost" aria-label="إغلاق">✕</button>
       </div>
-      <div class="modalBody">
-        <div class="pref">
-          <label>الخلفية</label>
-          <div class="seg">
-            <button class="segBtn" data-bg="night">ليل هادئ</button>
-            <button class="segBtn" data-bg="stars">نجوم لامعة</button>
-            <button class="segBtn" data-bg="dawn">فجر ذهبي</button>
-          </div>
+      <div class="grid">
+        <div class="sub">الخلفية</div>
+        <div class="row" style="gap:10px;flex-wrap:wrap">
+          <button class="btn segBtn" data-bg="night">ليل هادئ</button>
+          <button class="btn segBtn" data-bg="stars">نجوم لامعة</button>
+          <button class="btn segBtn" data-bg="dawn">فجر ذهبي</button>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- زر الإعدادات العائم -->
+  <button id="settingsBtn" class="settingsFab" aria-label="الإعدادات">⚙️</button>
 
   <!-- عنصر الصوت -->
-  <audio id="audio" preload="auto" playsinline webkit-playsinline></audio>
-  <script src="app.js?v=16"></script>
+  <audio id="audio" preload="auto" playsinline webkit-playsinline crossorigin="anonymous"></audio>
+
+  <!-- سكربت التطبيق -->
+  <script src="/app.js?v=15"></script>
+  <!-- تسجيل SW -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js?ver=v15');
+    }
+  </script>
 </body>
 </html>
