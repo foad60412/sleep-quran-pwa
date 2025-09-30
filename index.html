@@ -2,58 +2,71 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>قرآن النوم</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#000000">
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192-maskable.png">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="bg-night" data-theme="dark">
+
+  <!-- شاشة تحميل -->
+  <div id="splash" class="splash">
+    <div class="splash-logo">
+      <svg viewBox="0 0 100 100" class="moon"><circle cx="50" cy="50" r="35" fill="#d4af37"/><circle cx="62" cy="50" r="35" fill="#000"/></svg>
+      <div class="splash-title">قرآن النوم</div>
+    </div>
+  </div>
+
   <header class="topbar">
+    <button id="installBtn" class="installFab" hidden title="تثبيت"></button>
+
     <div class="logoWrap">
-      <!-- هلال ذهبي كأيقونة -->
       <svg class="moon" viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r="35" fill="#d4af37"/>
         <circle cx="62" cy="50" r="35" fill="#000"/>
       </svg>
       <div class="appTitle">قرآن النوم</div>
     </div>
-  
-    <!-- زر تثبيت محسّن -->
-    <button id="installBtn" class="installFab" hidden>
-      <svg width="22" height="22" viewBox="0 0 24 24">
-        <path fill="currentColor" d="M12 3v10.17l3.59-3.58L17 11l-5 5-5-5 1.41-1.41L11 13.17V3h1zM5 19h14v2H5z"/>
-      </svg>
-    </button>    
+
+    <!-- مفاتيح الثيم والخلفية -->
+    <div class="topActions">
+      <button id="themeToggle" class="chip" aria-label="تبديل الثيم">🌙</button>
+      <select id="bgSelect" class="chip selectChip" title="الخلفية">
+        <option value="night">ليل هادئ</option>
+        <option value="dawn">فجر ذهبي</option>
+        <option value="stars">نجوم خافتة</option>
+      </select>
+    </div>
   </header>
-  
+
   <main class="centerWrap">
     <section id="playerCard" class="glass">
       <div class="track-meta">
         <div id="trackTitle">—</div>
         <div id="trackSub">—</div>
       </div>
-  
+
       <div class="controls">
-        <button id="prevBtn" class="btn ico" aria-label="السابق" title="السابق">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M11 12L20 18V6L11 12Z" fill="currentColor"/><path d="M4 6H6V18H4V6Z" fill="currentColor"/></svg>
+        <button id="prevBtn" class="btn ico" aria-label="السابق">
+          ‹
         </button>
-        <button id="playPauseBtn" class="btn primary circle" aria-label="تشغيل/إيقاف" title="تشغيل/إيقاف">▶️</button>
-        <button id="nextBtn" class="btn ico" aria-label="التالي" title="التالي">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 6V18L13 12L4 6Z" fill="currentColor"/><path d="M18 6H20V18H18V6Z" fill="currentColor"/></svg>
+        <button id="playPauseBtn" class="btn primary circle" aria-label="تشغيل/إيقاف">▶️</button>
+        <button id="nextBtn" class="btn ico" aria-label="التالي">
+          ›
         </button>
       </div>
-  
+
       <div class="progress">
         <span id="currentTime">0:00</span>
         <input id="seek" type="range" min="0" max="100" value="0" aria-label="تحريك موضع التشغيل">
         <span id="duration">0:00</span>
       </div>
-  
-      <!-- خيارات محسّنة بصريًا -->
+
+      <!-- خيارات -->
       <div class="toggles">
         <label class="row glassRow">
           <div class="rowText">
@@ -65,7 +78,7 @@
             <span class="track"><span class="knob"></span></span>
           </label>
         </label>
-  
+
         <label class="row glassRow">
           <div class="rowText">
             <span class="rowTitle">تكرار القائمة</span>
@@ -76,7 +89,7 @@
             <span class="track"><span class="knob"></span></span>
           </label>
         </label>
-  
+
         <label class="row glassRow">
           <div class="rowText">
             <span class="rowTitle">مؤقّت النوم</span>
@@ -93,7 +106,7 @@
             </select>
           </div>
         </label>
-  
+
         <label class="row glassRow">
           <div class="rowText">
             <span class="rowTitle">مستوى الصوت</span>
@@ -102,23 +115,22 @@
           <input id="volume" type="range" min="0" max="1" step="0.01" value="0.6" class="volRange">
         </label>
       </div>
+
+      <div id="quickActions">
+        <button id="playAllBtn" class="btn wide">تشغيل القائمة كاملة</button>
+        <button id="stopBtn" class="btn wide outline">إيقاف</button>
+      </div>
     </section>
 
-  <section id="quickActions">
-    <button id="playAllBtn" class="btn wide">تشغيل القائمة كاملة</button>
-    <button id="stopBtn" class="btn outline">إيقاف</button>
-  </section>
+    <!-- قائمة التشغيل -->
+    <section id="playlist" aria-label="قائمة السور">
+      <div id="mulk"    class="item" data-src="audio/Surah-Al-Mulk.small.mp3"    data-title="سورة الملك"     data-sub="الملك"></div>
+      <div id="baqarah" class="item" data-src="audio/surah-Albaqarah.small.mp3"  data-title="سورة البقرة"    data-sub="آيات مختارة"></div>
+      <div id="ikhlas"  class="item" data-src="audio/surah-Alqrse.small.mp3"     data-title="سورة الإخلاص"   data-sub="الإخلاص"></div>
+    </section>
+  </main>
 
-  <section id="playlist" aria-label="قائمة التشغيل">
-    <!-- ملفاتك -->
-    <div class="item" data-src="audio/Surah-Al-Mulk.small.mp3" data-title="سورة الملك" data-sub="الملك"></div>
-    <div class="item" data-src="audio/surah-Albaqarah.small.mp3" data-title="سورة البقرة" data-sub="آيات مختارة"></div>
-    <div class="item" data-src="audio/surah-Alqrse.small.mp3" data-title="سورة الإخلاص" data-sub="الإخلاص"></div>
-  </section>
-</main>
-
-<audio id="audio" preload="metadata" crossorigin="anonymous"></audio>
-<script src="app.js?v=8"></script>
-<script>if('serviceWorker'in navigator)navigator.serviceWorker.register('service-worker.js');</script>
+  <audio id="audio" preload="metadata" crossorigin="anonymous"></audio>
+  <script src="app.js?v=8"></script>
 </body>
 </html>
