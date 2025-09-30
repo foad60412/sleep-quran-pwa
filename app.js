@@ -101,10 +101,19 @@ function load(i) {
   audio.load();                    // إجبار iOS على بدء التحضير
 
   seek.value = 0; cur.textContent = '0:00'; dur.textContent = '0:00';
-
+  
   if ('mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({ title, artist: 'تلاوات مختارة', album: 'قرآن النوم' });
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title,
+      artist: 'تلاوات مختارة',
+      album: 'قرآن النوم',
+      artwork: [
+        { src: '/assets/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/assets/icons/icon-512.png', sizes: '512x512', type: 'image/png' }
+      ]
+    });
   }
+  
 }
 
 function forcePrimeAudioChain() {

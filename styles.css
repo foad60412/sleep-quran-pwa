@@ -154,3 +154,80 @@ body{background:var(--bg);color:var(--fg);display:flex;flex-direction:column}
 @supports (padding: env(safe-area-inset-top)) {
   body{ padding-bottom: env(safe-area-inset-bottom); }
 }
+/* نجوم أوضح وكثيرة مع وميض */
+body.bg-stars {
+  /* تدرّج خفيف علوي */
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.9) 100%),
+    #000;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ثلاث طبقات نجوم عبر عناصر وهمية */
+body.bg-stars::before,
+body.bg-stars::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-size: 700px 700px;             /* كثافة عالية */
+  opacity: .9;
+  z-index: 0;
+}
+/* طبقة نجوم كبيرة متوهّجة */
+body.bg-stars::before{
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,200,.95) 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 120px 80px, rgba(255,230,140,.9) 50%, transparent 52%),
+    radial-gradient(1.8px 1.8px at 260px 160px, rgba(255,255,200,.95) 50%, transparent 52%),
+    radial-gradient(1.3px 1.3px at 400px 260px, rgba(255,230,140,.9) 50%, transparent 52%),
+    radial-gradient(2.2px 2.2px at 560px 340px, rgba(255,255,220,1) 50%, transparent 52%);
+  animation: twinkleA 3.5s ease-in-out infinite;
+}
+/* طبقة نجوم أصغر وكثيرة */
+body.bg-stars::after{
+  background-size: 600px 600px;
+  background-image:
+    radial-gradient(1.2px 1.2px at 40px 40px, rgba(255,255,255,.85) 50%, transparent 52%),
+    radial-gradient(1px 1px at 180px 120px, rgba(255,255,255,.7) 50%, transparent 52%),
+    radial-gradient(1px 1px at 320px 220px, rgba(255,255,255,.75) 50%, transparent 52%),
+    radial-gradient(1.4px 1.4px at 500px 300px, rgba(255,255,255,.8) 50%, transparent 52%),
+    radial-gradient(1px 1px at 620px 420px, rgba(255,255,255,.7) 50%, transparent 52%);
+  animation: twinkleB 4.2s ease-in-out infinite;
+}
+
+@keyframes twinkleA{
+  0%,100%{opacity:.85; transform:translateY(0)}
+  50%   {opacity:.55; transform:translateY(-0.5px)}
+}
+@keyframes twinkleB{
+  0%,100%{opacity:.8; transform:translateY(0)}
+  50%   {opacity:.45; transform:translateY(.5px)}
+}
+
+/* الصندوق الرئيسي يصبح زجاجياً شفافاً لتظهر النجوم من خلفه */
+.controlCard, .playerCard, .panel, .card {
+  background: rgba(25,25,25,0.38);          /* شفافية بدلاً من الرمادي المصمت */
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+}
+
+/* تأكيد طبقات الواجهة فوق النجوم */
+.header, main, footer, .controlCard, .playerCard, .panel, .card, .accordion {
+  position: relative;
+  z-index: 1;
+}
+
+/* تباين النص فوق الخلفية */
+body.bg-stars .title, body.bg-stars h1, body.bg-stars h2, body.bg-stars .sub {
+  text-shadow: 0 1px 2px rgba(0,0,0,.6);
+}
+
+/* احترام تقليل الحركة */
+@media (prefers-reduced-motion: reduce){
+  body.bg-stars::before, body.bg-stars::after{ animation: none; }
+}
