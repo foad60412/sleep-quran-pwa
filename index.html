@@ -12,8 +12,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-night" data-theme="dark">
-
-  <!-- شاشة تحميل -->
+  <!-- Splash -->
   <div id="splash" class="splash">
     <div class="splash-logo">
       <svg viewBox="0 0 100 100" class="moon"><circle cx="50" cy="50" r="35" fill="#d4af37"/><circle cx="62" cy="50" r="35" fill="#000"/></svg>
@@ -22,24 +21,13 @@
   </div>
 
   <header class="topbar">
+    <button id="settingsBtn" class="iconBtn gear" aria-label="الإعدادات">⚙️</button>
     <button id="installBtn" class="installFab" hidden title="تثبيت"></button>
-
     <div class="logoWrap">
       <svg class="moon" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="35" fill="#d4af37"/>
-        <circle cx="62" cy="50" r="35" fill="#000"/>
+        <circle cx="50" cy="50" r="35" fill="#d4af37"/><circle cx="62" cy="50" r="35" fill="#000"/>
       </svg>
       <div class="appTitle">قرآن النوم</div>
-    </div>
-
-    <!-- مفاتيح الثيم والخلفية -->
-    <div class="topActions">
-      <button id="themeToggle" class="chip" aria-label="تبديل الثيم">🌙</button>
-      <select id="bgSelect" class="chip selectChip" title="الخلفية">
-        <option value="night">ليل هادئ</option>
-        <option value="dawn">فجر ذهبي</option>
-        <option value="stars">نجوم خافتة</option>
-      </select>
     </div>
   </header>
 
@@ -51,13 +39,9 @@
       </div>
 
       <div class="controls">
-        <button id="prevBtn" class="btn ico" aria-label="السابق">
-          ‹
-        </button>
+        <button id="prevBtn" class="btn ico" aria-label="السابق">‹</button>
         <button id="playPauseBtn" class="btn primary circle" aria-label="تشغيل/إيقاف">▶️</button>
-        <button id="nextBtn" class="btn ico" aria-label="التالي">
-          ›
-        </button>
+        <button id="nextBtn" class="btn ico" aria-label="التالي">›</button>
       </div>
 
       <div class="progress">
@@ -66,52 +50,30 @@
         <span id="duration">0:00</span>
       </div>
 
-      <!-- خيارات -->
       <div class="toggles">
         <label class="row glassRow">
-          <div class="rowText">
-            <span class="rowTitle">تكرار المقطع</span>
-            <span class="rowHint">يعيد المقطع نفسه</span>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="loopTrack">
-            <span class="track"><span class="knob"></span></span>
-          </label>
+          <div class="rowText"><span class="rowTitle">تكرار المقطع</span><span class="rowHint">يعيد المقطع نفسه</span></div>
+          <label class="switch"><input type="checkbox" id="loopTrack"><span class="track"><span class="knob"></span></span></label>
         </label>
 
         <label class="row glassRow">
-          <div class="rowText">
-            <span class="rowTitle">تكرار القائمة</span>
-            <span class="rowHint">ينتقل تلقائيًا للعنصر التالي</span>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="loopAll" checked>
-            <span class="track"><span class="knob"></span></span>
-          </label>
+          <div class="rowText"><span class="rowTitle">تكرار القائمة</span><span class="rowHint">ينتقل تلقائيًا للعنصر التالي</span></div>
+          <label class="switch"><input type="checkbox" id="loopAll" checked><span class="track"><span class="knob"></span></span></label>
         </label>
 
         <label class="row glassRow">
-          <div class="rowText">
-            <span class="rowTitle">مؤقّت النوم</span>
-            <span class="rowHint">إيقاف تلقائي</span>
-          </div>
+          <div class="rowText"><span class="rowTitle">مؤقّت النوم</span><span class="rowHint">إيقاف تلقائي</span></div>
           <div class="selectWrap">
             <select id="sleepTimer">
-              <option value="0">بدون</option>
-              <option value="10">10 دقائق</option>
-              <option value="20">20 دقيقة</option>
-              <option value="30">30 دقيقة</option>
-              <option value="45">45 دقيقة</option>
-              <option value="60">60 دقيقة</option>
+              <option value="0">بدون</option><option value="10">10 دقائق</option>
+              <option value="20">20 دقيقة</option><option value="30">30 دقيقة</option>
+              <option value="45">45 دقيقة</option><option value="60">60 دقيقة</option>
             </select>
           </div>
         </label>
 
         <label class="row glassRow">
-          <div class="rowText">
-            <span class="rowTitle">مستوى الصوت</span>
-            <span class="rowHint">تحكم سريع</span>
-          </div>
+          <div class="rowText"><span class="rowTitle">مستوى الصوت</span><span class="rowHint">تحكم سريع</span></div>
           <input id="volume" type="range" min="0" max="1" step="0.01" value="0.6" class="volRange">
         </label>
       </div>
@@ -122,15 +84,45 @@
       </div>
     </section>
 
-    <!-- قائمة التشغيل -->
-    <section id="playlist" aria-label="قائمة السور">
-      <div id="mulk"    class="item" data-src="audio/Surah-Al-Mulk.small.mp3"    data-title="سورة الملك"     data-sub="الملك"></div>
-      <div id="baqarah" class="item" data-src="audio/surah-Albaqarah.small.mp3"  data-title="سورة البقرة"    data-sub="آيات مختارة"></div>
-      <div id="ikhlas"  class="item" data-src="audio/surah-Alqrse.small.mp3"     data-title="سورة الإخلاص"   data-sub="الإخلاص"></div>
+    <!-- قائمة السور (قابلة للطي) -->
+    <section class="accordion">
+      <button id="togglePlaylist" class="accordionBtn">قائمة السور</button>
+      <div id="playlist" class="accordionBody" aria-label="قائمة السور">
+        <div id="mulk"    class="item" data-src="audio/Surah-Al-Mulk.small.mp3"    data-title="سورة الملك"   data-sub="الملك"></div>
+        <div id="baqarah" class="item" data-src="audio/surah-Albaqarah.small.mp3"  data-title="سورة البقرة"  data-sub="آيات مختارة"></div>
+        <div id="ikhlas"  class="item" data-src="audio/surah-Alqrse.small.mp3"     data-title="سورة الإخلاص" data-sub="الإخلاص"></div>
+      </div>
     </section>
   </main>
 
+  <!-- نافذة الإعدادات -->
+  <div id="settingsModal" class="modal" aria-hidden="true">
+    <div class="modalCard">
+      <div class="modalHeader">
+        <h3>الإعدادات</h3>
+        <button id="closeSettings" class="iconBtn">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="pref">
+          <label>الثيم</label>
+          <div class="seg">
+            <button class="segBtn" data-theme="dark">ليلي 🌙</button>
+            <button class="segBtn" data-theme="light">نهاري ☀️</button>
+          </div>
+        </div>
+        <div class="pref">
+          <label>الخلفية</label>
+          <div class="seg">
+            <button class="segBtn" data-bg="night">ليل هادئ</button>
+            <button class="segBtn" data-bg="stars">نجوم</button>
+            <button class="segBtn" data-bg="dawn">فجر</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <audio id="audio" preload="metadata" crossorigin="anonymous"></audio>
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>
